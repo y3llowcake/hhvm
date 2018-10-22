@@ -24,8 +24,6 @@ using folly::stringPrintf;
 #define LOGGER DLOG(INFO)
 #define EH_THREAD_CHECKS 0
 
-namespace HPHP {
-
 /**
  * Escape Hatch: A simple asynchronous IPC mechanism intended for use with a
  * sidecar process. Supports request+response or one-way requests over pooled
@@ -38,12 +36,18 @@ namespace HPHP {
  *   payload to come.
  */
 
-static const auto optPool = String::FromCStr("pool");
-static const auto optPoolSize = String::FromCStr("pool_size");
-static const auto optPoolMaxage = String::FromCStr("pool_max_age");
-static const auto optUnix = String::FromCStr("unix");
-static const auto optOneway = String::FromCStr("one_way");
-static const auto optTimeoutMs = String::FromCStr("timeout_ms");
+namespace {
+
+const auto optPool = HPHP::StaticString("pool");
+const auto optPoolSize = HPHP::StaticString("pool_size");
+const auto optPoolMaxage = HPHP::StaticString("pool_max_age");
+const auto optUnix = HPHP::StaticString("unix");
+const auto optOneway = HPHP::StaticString("one_way");
+const auto optTimeoutMs = HPHP::StaticString("timeout_ms");
+
+}
+
+namespace HPHP {
 
 //
 // A singleton event loop for EH stuff.
@@ -487,7 +491,7 @@ Object HHVM_FUNCTION(escape_hatch, const String& dest, const Array& opt) {
 }
 
 struct EscapeHatchExtension : Extension {
-  EscapeHatchExtension(): Extension("escape_hatch", "1.0.10") {}
+  EscapeHatchExtension(): Extension("escape_hatch", "1.0.12") {}
 
   void moduleInit() override {
     HHVM_FE(escape_hatch);
